@@ -1,0 +1,181 @@
+nnoremap <SPACE> <Nop>
+let mapleader = " "
+
+set hlsearch
+set incsearch
+set smartcase
+set ignorecase
+set showmode
+set scrolloff=5
+set relativenumber
+
+set ideamarks
+
+nmap ma mA
+nmap `a `A
+nmap cm <action>(ToggleBookmark)
+nmap g1 <action>(GotoBookmark1)
+nmap g2 <action>(GotoBookmark2)
+nmap g3 <action>(GotoBookmark3)
+nmap g4 <action>(GotoBookmark4)
+nmap g5 <action>(GotoBookmark5)
+
+set easymotion
+set surround
+set argtextobj
+set multiple-cursors
+
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+nmap <C-x> <Plug>SkipOccurrence
+xmap <C-x> <Plug>SkipOccurrence
+nmap <C-p> <Plug>RemoveOccurrence
+xmap <C-p> <Plug>RemoveOccurrence
+nmap <S-C-n> <Plug>AllWholeOccurrences
+xmap <S-C-n> <Plug>AllWholeOccurrences
+
+set exchange
+set highlightedyank
+set textobj-entire
+set NERDTree
+set ReplaceWithRegister
+
+nnoremap L $
+onoremap L $
+vnoremap H ^
+nnoremap H ^
+onoremap H ^
+vnoremap L $
+onoremap L $
+" ===== jk -> 真正的 Esc =====
+" jk 是映射,j 就变成了映射前缀,于是单按 j 会等 timeoutlen(默认 1000ms)才生效
+" 这里压到 300ms;想更跟手可以调到 200,但太小会让 <leader>xxx 系列来不及按
+set timeoutlen=300
+
+" Insert: <Esc> 退出插入模式,再调 IDE 的 Escape(关补全弹窗等连锁)
+inoremap jk <Esc>:action EditorEscape<CR>
+" Normal: 先当 Esc 用(走 EditorResetConsumer -> IDE EditorEscape,关弹窗/清 IDE 高亮),
+" 再手动 :nohlsearch。注意 Esc 本身不会清 hlsearch 高亮(Vim 也如此),
+" IdeaVim 里也只有 :nohlsearch 和 IDE Find 会调 clearSearchHighlight()
+nnoremap jk <Esc>:nohlsearch<CR>
+" 让物理 Esc 也能清掉 hlsearch 高亮:先做原来的 Esc(IDE EditorEscape),再 :nohlsearch
+" 左边的 <Esc> 必须重映射,否则映射会把 IDE 的 Esc 行为覆盖掉,只剩 :nohlsearch
+nnoremap <Esc> <Esc>:nohlsearch<CR>
+" Visual: 退出可视模式(和物理 Esc 一致)
+vnoremap jk <Esc>
+
+" ===== 输入法自动切换(靠 IdeaVimExtension 插件,已安装 1.7.4,功能默认关闭) =====
+" 进入 Normal 模式 → 自动切英文(ABC);回到 Insert 模式 → 恢复原来的中文输入法
+" 写中文注释时:插完注释按 jk 直接是英文 Normal,按 i 回来又变中文
+" 注意:改这行必须重启 IDE 才生效,:source ~/.ideavimrc 不管用
+set keep-english-in-normal-and-restore-in-insert
+" 插件默认会记住“离开 Insert 前的输入源”再恢复,一般不用手填;
+" 如果豆包输入法恢复不回来,就把下面两行取消注释写死 id
+" let keep_input_source_in_normal = "com.apple.keylayout.ABC"
+" let keep_input_source_in_insert = "com.bytedance.inputmethod.doubaoime.pinyin"
+" context_aware(默认1):回 Insert 时看上下文决定要不要恢复中文(贴着中文才恢复)。
+" 想无脑恢复就设 0
+" let context_aware = 0
+
+map <leader>e :action SelectInProjectView<CR>
+nnoremap <leader>d :NERDTreeFocus<CR>
+
+set ideajoin
+set idearefactormode=keep
+
+nnoremap <leader>sc :nohlsearch<CR>
+
+map <leader>f <Plug>(easymotion-s)
+
+nnoremap <leader>ww <C-W>w
+nnoremap <leader>wd <C-W>c
+nnoremap <leader>wj <C-W>j
+nnoremap <leader>wk <C-W>k
+nnoremap <leader>wh <C-W>h
+nnoremap <leader>wl <C-W>l
+nnoremap <leader>ws <C-W>s
+nnoremap <leader>w- <C-W>s
+noremap <leader>wv <C-W>v
+nnoremap <leader>w\| <C-W>v
+
+" 开关终端工具窗口(按一下开、再按一下关)
+nnoremap <leader>t :action ActivateTerminalToolWindow<CR>
+" 隐藏当前工具窗口并回到编辑器(焦点在终端内时用)
+nnoremap <leader>x :action HideActiveWindow<CR>
+
+set clipboard=unnamed
+noremap <leader>y "*y
+noremap <leader>p "*p
+noremap <leader>P "0p
+vnoremap Y "+y
+
+nnoremap tn gt
+nnoremap tp gT
+
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+inoremap <C-a> <Home>
+inoremap <C-e> <End>
+nnoremap <C-h> 0
+
+nnoremap <Space>q :action CloseProject<CR>
+nnoremap <Space>Q :qa!<CR>
+
+nnoremap <leader>ve :e ~/.ideavimrc<CR>
+nnoremap <leader>vw :w!<CR>
+nnoremap <leader>vs :source ~/.ideavimrc<CR>
+
+nnoremap <leader>a :action GotoAction<CR>
+nnoremap <leader>b :action ShowBookmarks<CR>
+nnoremap <leader>c :action GotoClass<CR>
+nnoremap <leader>gc :action Git.CompareWithBranch<CR>
+nnoremap <leader>ga :action Annotate<CR>
+nnoremap <leader>gh :action Vcs.ShowTabbedFileHistory<CR>
+nnoremap <leader>nj :action NewFile<CR>
+nnoremap <leader>nt :action Kotlin.NewFile<CR>
+nnoremap <leader>r :action RecentFiles<CR>
+nnoremap <leader>mr :action Maven.Reimport<CR>
+
+nnoremap ta :action VimFindActionIdAction<CR>
+
+nnoremap ,d :action Debug<CR>
+nnoremap ,r :action Run<CR>
+nnoremap ,c :action CompileDirty<CR>
+nnoremap ,b :action ToggleLineBreakpoint<CR>
+nnoremap ,v :action ViewBreakpoints<CR>
+nnoremap ,s :action Stop<CR>
+
+nnoremap gs :action GotoSuperMethod<CR>
+nnoremap gb g;
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gf :action FileStructurePopup<CR>
+
+nnoremap U :action FindUsages<CR>
+nnoremap R :action RenameElement<CR>
+nnoremap == :action ReformatCode<CR>
+vnoremap = :action ReformatCode<CR>
+nnoremap -- :action OptimizeImports<CR>
+nnoremap cc :action CommentByLineComment<CR>
+vnoremap cc :action CommentByLineComment<CR>
+
+nnoremap <leader>da :%d<CR>
+nnoremap <leader>sa ggVG
+
+nnoremap <C-d> <<
+vnoremap <C-d> <gv
+nnoremap <C-t> >>
+
+" ===== 缩进 =====
+" Insert: Tab 在补全弹窗开着时接受当前项(<C-y>);没弹窗时缩进一级(<C-T>)
+" S-Tab: 弹窗开着时选上一项(<C-p>);没弹窗时退一级缩进(<C-D>)
+inoremap <expr> <Tab> pumvisible() ? '<C-y>' : '<C-T>'
+inoremap <expr> <S-Tab> pumvisible() ? '<C-p>' : '<C-D>'
+" Normal / Visual: Tab / S-Tab 直接缩进或回退(Visual 保持选中)
+nnoremap <Tab> >>
+nnoremap <S-Tab> <<
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
+" 想完全不碰补全: Insert 模式用 Ctrl-T / Ctrl-D,Normal 用 Ctrl-T / Ctrl-D(或 >> / <<)
